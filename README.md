@@ -1,4 +1,4 @@
-# Excursion I — 2026 Jeju Conference on Mathematical Finance
+# Excursion I — 2026 Jeju Conference on Mathematical Finance and Related Topics
 
 Participant information page for the Saturday afternoon excursion.
 
