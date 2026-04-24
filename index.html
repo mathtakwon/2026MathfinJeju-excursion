@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excursion I — 2026 Jeju Conference on Mathematical Finance</title>
+<meta name="description" content="Information for participants: Saturday afternoon excursion to Hallim Park and Hyeopjae Beach, Jeju Island.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --text-primary: #1a1a1a;
+    --text-secondary: #5f5e5a;
+    --text-tertiary: #9c9a92;
+    --text-info: #185FA5;
+    --navy: #1B2E5D;
+    --gold: #C6AA76;
+    --accent: #0F6E56;
+    --bg-page: #faf9f7;
+    --bg-card: #ffffff;
+    --bg-secondary: #f1efe8;
+    --border-light: rgba(0,0,0,0.08);
+    --border: rgba(0,0,0,0.15);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-page);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'ss01' on;
+  }
+  .container {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 56px 24px 64px;
+  }
+
+  /* Header */
+  .brand {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  h1.title {
+    margin: 0 0 8px;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .tagline {
+    margin: 0 0 24px;
+    font-size: 17px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .lead {
+    margin: 0 0 32px;
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+
+  /* At a glance */
+  .glance {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 20px;
+    margin: 0 0 40px;
+    padding: 20px 24px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+  }
+  .g-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .g-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1.3;
+  }
+  .g-row strong {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  @media (max-width: 600px) {
+    .glance { grid-template-columns: 1fr; }
+  }
+
+  /* Facts box */
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 0 0 40px;
+    padding: 20px 24px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+  }
+  .fact-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+  .fact-value {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  /* Section titles */
+  h2.section-title {
+    margin: 48px 0 18px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+  h2.section-title:first-of-type {
+    margin-top: 40px;
+  }
+  .section-lead {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Map */
+  .map-container {
+    width: 100%;
+    height: 380px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-secondary);
+    margin-bottom: 12px;
+  }
+  .leaflet-popup-content-wrapper {
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  }
+  .leaflet-popup-content {
+    margin: 10px 14px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+  .leaflet-popup-content .pop-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .leaflet-popup-content .pop-sub {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+  }
+  .marker-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+  .mk-transit { background: #5F5E5A; }
+  .mk-lunch   { background: #854F0B; }
+  .mk-free    { background: #0F6E56; }
+  .mk-dinner  { background: #993556; }
+
+  .map-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 6px 20px;
+    padding: 12px 14px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    font-size: 12.5px;
+  }
+  .map-legend .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-secondary);
+  }
+  .map-legend .dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .map-legend strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Schedule */
+  .schedule {
+    margin-top: 16px;
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .sched-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 20px;
+    padding: 18px 22px;
+    border-bottom: 0.5px solid var(--border-light);
+  }
+  .sched-row:last-child { border-bottom: none; }
+  .sched-row.transit { background: rgba(241, 239, 232, 0.3); }
+  .sched-time {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .sched-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+    line-height: 1.4;
+  }
+  .sched-title .num-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    margin-right: 8px;
+    vertical-align: 2px;
+  }
+  .sched-note {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Choose your pace */
+  .pace-intro {
+    margin: 40px 0 16px;
+  }
+  .pace-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .pace-card {
+    padding: 18px 20px;
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    border-top: 3px solid var(--accent);
+  }
+  .pace-card.relax  { border-top-color: #9C8147; }
+  .pace-card.light  { border-top-color: #0F6E56; }
+  .pace-card.full   { border-top-color: #1B2E5D; }
+  .pace-icon {
+    font-size: 22px;
+    margin: 0 0 8px;
+  }
+  .pace-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .pace-card.relax .pace-name { color: #9C8147; }
+  .pace-card.light .pace-name { color: #0F6E56; }
+  .pace-card.full  .pace-name { color: #1B2E5D; }
+
+  .pace-card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+  .pace-card p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Destinations detail */
+  .dest {
+    margin-bottom: 18px;
+    padding: 24px 26px;
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .dest-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 8px;
+  }
+  .dest-head h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .dest-meta {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+  }
+  .dest-desc {
+    margin: 0 0 16px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .dest-cat {
+    margin: 16px 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-primary);
+    text-transform: uppercase;
+  }
+  .dest-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .dest-list li {
+    padding: 5px 0 5px 16px;
+    position: relative;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .dest-list li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 11px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+  }
+  .dest-list li strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .dest-list a {
+    color: var(--text-info);
+    text-decoration: none;
+    border-bottom: 0.5px solid rgba(24,95,165,0.3);
+  }
+  .dest-list a:hover { border-bottom-color: var(--text-info); }
+
+  /* Practical info */
+  .practical {
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+  }
+  .pract-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 22px 28px;
+  }
+  .pract-item h4 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.02em;
+  }
+  .pract-item p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+  .pract-item strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Rain box */
+  .rain-box {
+    margin-top: 24px;
+    padding: 18px 22px;
+    background: #EEF5FC;
+    border-left: 3px solid #378ADD;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-size: 13px;
+    color: #0C447C;
+    line-height: 1.7;
+  }
+  .rain-box h4 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0C447C;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rain-box p { margin: 0; }
+  .rain-box strong { font-weight: 600; }
+
+  /* Footer */
+  .footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 0.5px solid var(--border-light);
+    font-size: 12px;
+    color: var(--text-tertiary);
+    line-height: 1.8;
+  }
+  .footer a {
+    color: var(--text-info);
+    text-decoration: none;
+    border-bottom: 0.5px solid rgba(24,95,165,0.3);
+  }
+  .footer strong {
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  @media (max-width: 720px) {
+    .container { padding: 36px 18px 48px; }
+    h1.title { font-size: 26px; }
+    .tagline { font-size: 15px; }
+    .pace-grid { grid-template-columns: 1fr; }
+    .sched-row { grid-template-columns: 1fr; padding: 16px 18px; gap: 8px; }
+    .sched-time { font-size: 13px; color: var(--accent); }
+    .dest { padding: 20px 22px; }
+  }
+
+  @media print {
+    body { background: white; }
+    .container { padding: 20px; max-width: 100%; }
+    .dest, .schedule, .practical { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="brand">2026 Jeju Conference on Mathematical Finance</p>
+  <h1 class="title">Excursion I — Saturday Afternoon</h1>
+  <p class="tagline">Hallim Park &amp; Hyeopjae Beach · Northwestern Jeju · May 31, 2026</p>
+
+  <p class="lead">
+    An optional afternoon out during the conference — lunch, free time at one of Jeju's most
+    scenic spots, and a group seafood dinner. We're checking interest to finalize plans.
+  </p>
+
+  <div class="glance">
+    <div class="g-row"><span class="g-icon">📅</span><div><strong>When</strong>Sat May 31, afternoon &amp; evening</div></div>
+    <div class="g-row"><span class="g-icon">📍</span><div><strong>Where</strong>Hallim Park &amp; Hyeopjae Beach (NW Jeju)</div></div>
+    <div class="g-row"><span class="g-icon">🚌</span><div><strong>How</strong>Group bus from the hotel, back by ~ 20:15</div></div>
+    <div class="g-row"><span class="g-icon">🍽️</span><div><strong>Includes</strong>Lunch · free time · Jeju seafood dinner</div></div>
+  </div>
+
+  <h2 class="section-title">The Route</h2>
+  <p class="section-lead">Two main stops — lunch, then a single free-time area where the park and beach sit side by side.</p>
+
+  <div id="route-map" class="map-container"></div>
+  <div class="map-legend">
+    <div class="row"><span class="dot mk-transit">1</span> <span><strong>The Suites Hotel Jeju</strong> — conference venue</span></div>
+    <div class="row"><span class="dot mk-lunch">2</span> <span><strong>Podo Hotel Restaurant</strong> — lunch</span></div>
+    <div class="row"><span class="dot mk-free">3</span> <span><strong>Hallim Park &amp; Hyeopjae Beach</strong> — free time</span></div>
+    <div class="row"><span class="dot mk-dinner">4</span> <span><strong>Galchi-wang Jungmun</strong> — dinner</span></div>
+    <div class="row"><span class="dot mk-transit">5</span> <span><strong>Return to the hotel</strong></span></div>
+  </div>
+
+  <h2 class="section-title">The Day</h2>
+
+  <div class="schedule">
+    <div class="sched-row transit">
+      <div class="sched-time">Early afternoon</div>
+      <div>
+        <p class="sched-title"><span class="num-dot mk-transit">1</span>Depart the conference hotel</p>
+        <p class="sched-note">Chartered bus, heading northwest.</p>
+      </div>
+    </div>
+
+    <div class="sched-row">
+      <div class="sched-time">Lunch</div>
+      <div>
+        <p class="sched-title"><span class="num-dot mk-lunch">2</span>Podo Hotel Restaurant</p>
+        <p class="sched-note">Jeju-style udon at a restaurant inside the <strong>Podo Hotel</strong> — a landmark work by architect <strong>Itami Jun</strong>, its grape-cluster roofline shaped after Jeju's volcanic cones (오름).</p>
+      </div>
+    </div>
+
+    <div class="sched-row">
+      <div class="sched-time">Afternoon</div>
+      <div>
+        <p class="sched-title"><span class="num-dot mk-free">3</span>Free time: Hallim Park &amp; Hyeopjae Beach</p>
+        <p class="sched-note">About two and a half hours. The park and beach are a five-minute walk apart, so you can choose either or both. See <em>Choose Your Pace</em> below.</p>
+      </div>
+    </div>
+
+    <div class="sched-row">
+      <div class="sched-time">Evening</div>
+      <div>
+        <p class="sched-title"><span class="num-dot mk-dinner">4</span>Dinner — Galchi-wang Jungmun</p>
+        <p class="sched-note">Jeju-style <strong>silver cutlassfish (galchi)</strong> — grilled and braised, served with rice and banchan. Bones are pre-removed on request.</p>
+      </div>
+    </div>
+
+    <div class="sched-row transit">
+      <div class="sched-time">~ 20:15</div>
+      <div>
+        <p class="sched-title"><span class="num-dot mk-transit">5</span>Back at the hotel</p>
+        <p class="sched-note">Rest of the evening is yours.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Choose Your Pace</h2>
+  <p class="section-lead">Pick your own level of activity during the free-time window.</p>
+
+  <div class="pace-grid">
+    <div class="pace-card relax">
+      <div class="pace-icon">🛋️</div>
+      <p class="pace-name">Relax</p>
+      <p>A café on the beach with a view of Biyangdo island. Watch the water. Don't move.</p>
+    </div>
+    <div class="pace-card light">
+      <div class="pace-icon">🚶</div>
+      <p class="pace-name">Light</p>
+      <p>Walk the beach, then step into Hallim Park for the two famous <strong>lava caves</strong> — cool, dry, flat paths.</p>
+    </div>
+    <div class="pace-card full">
+      <div class="pace-icon">🌿</div>
+      <p class="pace-name">Full</p>
+      <p>The whole Hallim Park loop — caves, tropical gardens, bonsai, a folk village. Plenty to see in ~ 2 hours.</p>
+    </div>
+  </div>
+
+  <h2 class="section-title">The Stops, in Detail</h2>
+
+  <div class="dest">
+    <div class="dest-head">
+      <h3>🌿 Hallim Park (한림공원)</h3>
+      <span class="dest-meta">Admission ~ ₩15,000 · mostly covered</span>
+    </div>
+    <p class="dest-desc">
+      A 100,000 m² botanical and cultural park founded in 1971 — lava caves, tropical plants, a traditional village, and an extensive bonsai collection, all on mostly flat walking paths. English signage throughout.
+    </p>
+
+    <p class="dest-cat">Natural &amp; Geological Features</p>
+    <ul class="dest-list">
+      <li><strong><a href="https://www.visitjeju.net/en/detail/view?contentsid=CONT_000000000500696" target="_blank" rel="noopener">Hyeopjae Cave</a></strong> — A lava tube with a rare combination of lava-cave and limestone-cave features (white stalactites). The interior stays cool (~17°C) year-round.</li>
+      <li><strong><a href="https://www.visitjeju.net/en/detail/view?contentsid=CONT_000000000500405" target="_blank" rel="noopener">Ssangyong Cave</a></strong> — "Twin Dragon Cave," another lava tube connected to Hyeopjae by a short walking path.</li>
+      <li><strong>Lotus Pond Garden</strong> — Water lilies and koi in pools built on volcanic rock; a small waterfall.</li>
+      <li><strong>Subtropical Botanical Garden</strong> — Palm-lined walkway with tropical and subtropical species.</li>
+    </ul>
+
+    <p class="dest-cat">Cultural &amp; Heritage</p>
+    <ul class="dest-list">
+      <li><strong>Jaeam Folk Village</strong> — Traditional Jeju thatched houses (초가집) with basalt stone walls, arranged as a lived-in village from the early 20th century.</li>
+      <li><strong>Jaeam Stone Exhibition Hall</strong> — A collection of Jeju suseok (natural stone art), an East Asian tradition of appreciating stones with poetic forms.</li>
+    </ul>
+
+    <p class="dest-cat">Other Highlights</p>
+    <ul class="dest-list">
+      <li><strong>Bonsai Garden</strong> — Over 300 specimens, some over a century old. Especially popular among international visitors.</li>
+      <li><strong>Aviary (Bird Garden)</strong> — Peacocks, ostriches, and other species in open enclosures.</li>
+    </ul>
+  </div>
+
+  <div class="dest">
+    <div class="dest-head">
+      <h3>🏖️ Hyeopjae Beach (협재해변)</h3>
+      <span class="dest-meta">Free · outdoor · ~ 5 min walk from the park</span>
+    </div>
+    <p class="dest-desc">
+      Widely considered Jeju's most scenic beach — white sand, shallow turquoise water, and the small volcanic islet of <strong>Biyangdo</strong> rising offshore. A cluster of cafés lines the beach.
+    </p>
+
+    <p class="dest-cat">What to Do</p>
+    <ul class="dest-list">
+      <li><strong>Walk the shoreline</strong> — Roughly 1 km of flat sand and a short wooden boardwalk.</li>
+      <li><strong>Biyangdo island view</strong> — The small volcanic islet offshore is the beach's signature backdrop and a favorite subject for photographs.</li>
+      <li><strong>Café break</strong> — Several well-known cafés with beach views, including Hotel Sand and Comma — see below.</li>
+    </ul>
+
+    <p class="dest-cat">Nearby Cafés (5–10 min walk)</p>
+    <ul class="dest-list">
+      <li><strong><a href="https://search.naver.com/search.naver?where=blog&query=Hotel%20Sand%20Hyeopjae" target="_blank" rel="noopener">Hotel Sand</a></strong> — A landmark café with sand-covered outdoor terrace and direct beach view.</li>
+      <li><strong><a href="https://search.naver.com/search.naver?where=blog&query=Comma%20cafe%20Hyeopjae" target="_blank" rel="noopener">Comma</a></strong> — Minimalist interior with panoramic windows facing Biyangdo.</li>
+      <li><strong><a href="https://search.naver.com/search.naver?where=blog&query=%ED%98%91%EC%9E%AC%EC%9D%B4%EA%B8%B8" target="_blank" rel="noopener">Hyeopjae-i-gil</a></strong> — Quieter café a block inland, popular for tea and desserts.</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <p><strong>Interested, or have questions?</strong> Please contact the organizing committee at <a href="mailto:jmf2026jeju@gmail.com">jmf2026jeju@gmail.com</a>.</p>
+    <p style="margin-top: 8px;">Organized by <strong>Takwon Kim</strong> (Sungshin Women's University), <strong>Junkee Jeon</strong> (Kyung Hee University), and <strong>Donghan Kim</strong> · 2026 Jeju Conference on Mathematical Finance · May 31 – June 3, 2026</p>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  (function() {
+    if (typeof L === 'undefined') {
+      document.getElementById('route-map').innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-tertiary);font-size:13px;">Map requires internet connection</div>';
+      return;
+    }
+    const stops = [
+      { lat: 33.2493324, lng: 126.4083941, num: '1', cls: 'mk-transit', title: 'The Suites Hotel Jeju', sub: 'Conference venue' },
+      { lat: 33.3179665, lng: 126.3868842, num: '2', cls: 'mk-lunch',   title: 'Podo Hotel Restaurant', sub: 'Lunch' },
+      { lat: 33.3919000, lng: 126.2398900, num: '3', cls: 'mk-free',    title: 'Hallim Park & Hyeopjae Beach', sub: 'Free time' },
+      { lat: 33.2646227, lng: 126.3908426, num: '4', cls: 'mk-dinner',  title: 'Galchi-wang Jungmun',    sub: 'Dinner' },
+      { lat: 33.2493324, lng: 126.4083941, num: '5', cls: 'mk-transit', title: 'The Suites Hotel Jeju', sub: 'Return' }
+    ];
+
+    const map = L.map('route-map', { scrollWheelZoom: false, zoomControl: true });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+
+    const latlngs = [];
+    stops.forEach(function(s, i) {
+      const latlng = [s.lat, s.lng];
+      latlngs.push(latlng);
+      if (i === stops.length - 1) return;
+      const icon = L.divIcon({
+        className: '',
+        html: '<div class="marker-num ' + s.cls + '">' + s.num + '</div>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+      L.marker(latlng, { icon: icon })
+        .addTo(map)
+        .bindPopup('<div class="pop-title">' + s.title + '</div><div class="pop-sub">' + s.sub + '</div>');
+    });
+
+    const drawStraight = function() {
+      L.polyline(latlngs, {
+        color: '#1B2E5D',
+        weight: 2.5,
+        opacity: 0.6,
+        dashArray: '6, 6'
+      }).addTo(map);
+    };
+
+    const coordString = latlngs.map(function(ll) { return ll[1] + ',' + ll[0]; }).join(';');
+    fetch('https://router.project-osrm.org/route/v1/driving/' + coordString + '?overview=full&geometries=geojson')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.code === 'Ok' && data.routes && data.routes[0]) {
+          L.geoJSON(data.routes[0].geometry, {
+            style: { color: '#1B2E5D', weight: 3, opacity: 0.65, lineCap: 'round', lineJoin: 'round' }
+          }).addTo(map);
+        } else {
+          drawStraight();
+        }
+      })
+      .catch(function() { drawStraight(); });
+
+    map.fitBounds(L.latLngBounds(latlngs), { padding: [40, 50] });
+    setTimeout(function() { map.invalidateSize(); }, 200);
+  })();
+</script>
+</body>
+</html>
